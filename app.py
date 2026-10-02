@@ -124,7 +124,7 @@ if st.session_state.chat is None:
 
                 # Create Gemini chat
                 st.session_state.chat = client.chats.create(
-                    model="gemini-3.5-flash",
+                    model="gemini-3.5-flash-lite",
                     config={
                         "system_instruction": SYSTEM_PROMPT
                     }
