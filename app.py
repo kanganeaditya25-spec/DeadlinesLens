@@ -68,7 +68,12 @@ if "digest" not in st.session_state:
 
 st.title("📅 DeadlineLens")
 
-st.write("AI Academic Deadline Tracker")
+st.caption("AI Academic Deadline Tracker")
+
+st.write(
+    "Upload your academic documents and let AI find "
+    "important deadlines for you."
+)
 
 
 # --------------------------------
@@ -145,56 +150,6 @@ if st.session_state.chat is None:
 # --------------------------------
 
 if st.session_state.chat is not None:
-
-
-    # --------------------------------
-    # Deadline digest button
-    # --------------------------------
-
-
-
-
-    # --------------------------------
-    # Show deadline digest
-    # --------------------------------
-
-    if st.session_state.digest:
-
-        st.subheader(
-            "📋 Your Deadline Digest"
-        )
-
-        st.write(
-            st.session_state.digest
-        )
-
-
-        # Send digest by email
-        if st.button(
-            "📧 Send deadline digest"
-        ):
-
-            try:
-
-                send_email(
-                    st.secrets["GMAIL_EMAIL"],
-                    st.secrets["GMAIL_APP_PASSWORD"],
-                    st.session_state.user_email,
-                    "DeadlineLens - Your Academic Deadline Digest",
-                    st.session_state.digest
-                )
-
-                st.success(
-                    "Deadline digest sent successfully! 📧"
-                )
-
-            except Exception as e:
-
-                st.error(
-                    "Could not send the email."
-                )
-
-                st.write(e)
 
 
     # --------------------------------
@@ -337,9 +292,9 @@ if st.session_state.chat is not None:
             try:
 
                 deadline_data = extract_deadlines(
-                client,
-                image
-                    )
+                    client,
+                    image
+                )
 
             except Exception as e:
 
@@ -357,8 +312,12 @@ if st.session_state.chat is not None:
             # --------------------------------
 
             for deadline in deadline_data:
+
                 if deadline not in st.session_state.deadlines:
-                    st.session_state.deadlines.append(deadline)
+
+                    st.session_state.deadlines.append(
+                        deadline
+                    )
 
 
             # --------------------------------
@@ -385,24 +344,7 @@ if st.session_state.chat is not None:
                     "No clear deadlines were found in this image."
                 )
 
-                if len(st.session_state.deadlines) > 0:
 
-                    if st.button(
-                        "📋 Create Deadline Digest"
-                    ):
-
-                        response = st.session_state.chat.send_message(
-                            SUMMARY_REQUEST_PROMPT
-                        )
-
-                        st.session_state.digest = response.text
-
-                else:
-
-                    st.button(
-                        "📋 Create Deadline Digest",
-                        disabled=True
-                    )
             # --------------------------------
             # Show Gemini response
             # --------------------------------
@@ -425,7 +367,6 @@ if st.session_state.chat is not None:
                         "text": response.text
                     }
                 )
-
 
 
         # --------------------------------
@@ -462,6 +403,87 @@ if st.session_state.chat is not None:
 
                 st.error(
                     "Sorry, I could not get a response from Gemini."
+                )
+
+                st.write(e)
+
+
+    # --------------------------------
+    # Deadline digest
+    # --------------------------------
+
+    st.divider()
+
+    st.subheader(
+        "📋 Deadline Digest"
+    )
+
+
+    if len(st.session_state.deadlines) > 0:
+
+        st.write(
+            "Your deadlines are ready. Create a simple summary below."
+        )
+
+        if st.button(
+            "📋 Create Deadline Digest"
+        ):
+
+            response = st.session_state.chat.send_message(
+                SUMMARY_REQUEST_PROMPT
+            )
+
+            st.session_state.digest = response.text
+
+    else:
+
+        st.button(
+            "📋 Create Deadline Digest",
+            disabled=True
+        )
+
+
+    # --------------------------------
+    # Show deadline digest
+    # --------------------------------
+
+    if st.session_state.digest:
+
+        st.subheader(
+            "📋 Your Deadline Digest"
+        )
+
+        st.write(
+            st.session_state.digest
+        )
+
+
+        # --------------------------------
+        # Send digest by email
+        # --------------------------------
+
+        if st.button(
+            "📧 Send deadline digest"
+        ):
+
+            try:
+
+                send_email(
+                    st.secrets["GMAIL_EMAIL"],
+                    st.secrets["GMAIL_APP_PASSWORD"],
+                    st.session_state.user_email,
+                    "DeadlineLens - Your Academic Deadline Digest",
+                    st.session_state.digest
+                )
+
+                st.success(
+                    "Deadline digest sent successfully! 📧"
+                )
+
+            except Exception as e:
+
+                st.error(
+                    "Could not send the email."
                 )
 
                 st.write(e)
