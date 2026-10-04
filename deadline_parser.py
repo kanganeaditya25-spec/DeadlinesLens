@@ -34,11 +34,15 @@ Rules:
 - If there are no deadlines, return an empty list.
 """
 
+
+    # Convert uploaded image into a Gemini image part
     image_part = types.Part.from_bytes(
         data=image.getvalue(),
         mime_type=image.type
     )
 
+
+    # Send image to Gemini
     response = client.models.generate_content(
         model="gemini-3.5-flash-lite",
         contents=[
@@ -47,13 +51,18 @@ Rules:
         ]
     )
 
+
+    # Get Gemini response
     result = response.text
+
 
     # Remove JSON code fences if Gemini adds them
     result = result.replace("```json", "")
     result = result.replace("```", "")
     result = result.strip()
 
+
+    # Convert response into Python list
     try:
 
         deadlines = json.loads(result)
