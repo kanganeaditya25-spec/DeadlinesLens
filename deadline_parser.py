@@ -2,7 +2,7 @@ import json
 from google.genai import types
 
 
-def extract_deadlines(client, image, system_prompt):
+def extract_deadlines(client, image):
 
     prompt = """
 Look at this academic document carefully.

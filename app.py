@@ -151,24 +151,7 @@ if st.session_state.chat is not None:
     # Deadline digest button
     # --------------------------------
 
-    if len(st.session_state.deadlines) > 0:
 
-        if st.button(
-            "📋 Create Deadline Digest"
-        ):
-
-            response = st.session_state.chat.send_message(
-                SUMMARY_REQUEST_PROMPT
-            )
-
-            st.session_state.digest = response.text
-
-    else:
-
-        st.button(
-            "📋 Create Deadline Digest",
-            disabled=True
-        )
 
 
     # --------------------------------
@@ -354,10 +337,9 @@ if st.session_state.chat is not None:
             try:
 
                 deadline_data = extract_deadlines(
-                    client,
-                    image,
-                    SYSTEM_PROMPT
-                )
+                client,
+                image
+                    )
 
             except Exception as e:
 
@@ -375,10 +357,8 @@ if st.session_state.chat is not None:
             # --------------------------------
 
             for deadline in deadline_data:
-
-                st.session_state.deadlines.append(
-                    deadline
-                )
+                if deadline not in st.session_state.deadlines:
+                    st.session_state.deadlines.append(deadline)
 
 
             # --------------------------------
@@ -405,7 +385,24 @@ if st.session_state.chat is not None:
                     "No clear deadlines were found in this image."
                 )
 
+                if len(st.session_state.deadlines) > 0:
 
+                    if st.button(
+                        "📋 Create Deadline Digest"
+                    ):
+
+                        response = st.session_state.chat.send_message(
+                            SUMMARY_REQUEST_PROMPT
+                        )
+
+                        st.session_state.digest = response.text
+
+                else:
+
+                    st.button(
+                        "📋 Create Deadline Digest",
+                        disabled=True
+                    )
             # --------------------------------
             # Show Gemini response
             # --------------------------------
@@ -428,6 +425,7 @@ if st.session_state.chat is not None:
                         "text": response.text
                     }
                 )
+
 
 
         # --------------------------------
